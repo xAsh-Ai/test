@@ -1,4 +1,3 @@
-# .github/workflows/deploy.yml
 name: Deploy Next.js to Oracle VM
 
 on:
@@ -10,19 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Build
-        run: |
-          npm install
-          npm run build
-
       - name: Deploy to Oracle VM
         uses: appleboy/ssh-action@master
         with:
@@ -36,14 +22,13 @@ jobs:
             npm run build
             pm2 restart nextjs || pm2 start npm --name "nextjs" -- run start
 
-      - name: Discord Notification (Success)
-        if: success()
+      - name: Notify Discord
+        if: always()
         uses: tsickert/discord-webhook@v1.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
           content: |
-            ✅ **[배포 성공 - Next.js]**
+            🚀 **[Oracle VM 배포 완료]**
             ▫ 브랜치: `${{ github.ref_name }}`
             ▫ 커밋: `${{ github.sha }}`
             ▫ 작성자: `${{ github.actor }}`
-
