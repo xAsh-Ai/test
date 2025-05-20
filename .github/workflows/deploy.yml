@@ -36,13 +36,14 @@ jobs:
             npm run build
             pm2 restart nextjs || pm2 start npm --name "nextjs" -- run start
 
-      - name: Notify Discord
-        if: always()
-        uses: Ilshidur/action-discord@master
+      - name: Discord Notification (Success)
+        if: success()
+        uses: tsickert/discord-webhook@v1.0.0
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            📦 **Next.js 배포 완료**
-            ▫ 브랜치: ${{ github.ref_name }}
-            ▫ 커밋: ${{ github.sha }}
-            ▫ 작성자: ${{ github.actor }}
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            ✅ **[배포 성공 - Next.js]**
+            ▫ 브랜치: `${{ github.ref_name }}`
+            ▫ 커밋: `${{ github.sha }}`
+            ▫ 작성자: `${{ github.actor }}`
+
