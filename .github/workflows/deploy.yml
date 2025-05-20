@@ -24,12 +24,11 @@ jobs:
 
       - name: Notify Discord
         if: always()
-        uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: |
-            🚀 **[Oracle VM 배포 완료]**
-            ▫ 브랜치: ${{ github.ref_name }}
-            ▫ 커밋: ${{ github.sha }}
-            ▫ 작성자: ${{ github.actor }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "username": "Deploy Bot",
+                 "content": "🚀 **[Oracle VM 배포 완료]**\n▫ 브랜치: ${{ github.ref_name }}\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: ${{ github.actor }}"
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
