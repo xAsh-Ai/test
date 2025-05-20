@@ -1,14 +1,14 @@
-name: Deploy Next.js to EC2
+# .github/workflows/deploy.yml
+name: Deploy Next.js to Oracle VM
 
 on:
   push:
     branches:
-      - main  # or deploy 브랜치
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,12 +18,12 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Build Next.js
+      - name: Build
         run: |
           npm install
           npm run build
 
-      - name: Deploy to EC2
+      - name: Deploy to Oracle VM
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -36,24 +36,13 @@ jobs:
             npm run build
             pm2 restart nextjs || pm2 start npm --name "nextjs" -- run start
 
-      - name: Discord Notification (Success)
-        if: success()
+      - name: Notify Discord
+        if: always()
         uses: Ilshidur/action-discord@master
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           message: |
-            ✅ **[배포 성공 - Next.js]**
-            ▫ 브랜치: `${{ github.ref_name }}`
-            ▫ 커밋: `${{ github.sha }}`
-            ▫ 작성자: `${{ github.actor }}`
-
-      - name: Discord Notification (Failure)
-        if: failure()
-        uses: Ilshidur/action-discord@master
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            ❌ **[배포 실패 - Next.js]**
-            ▫ 브랜치: `${{ github.ref_name }}`
-            ▫ 커밋: `${{ github.sha }}`
-            ▫ 작성자: `${{ github.actor }}`
+            📦 **Next.js 배포 완료**
+            ▫ 브랜치: ${{ github.ref_name }}
+            ▫ 커밋: ${{ github.sha }}
+            ▫ 작성자: ${{ github.actor }}
