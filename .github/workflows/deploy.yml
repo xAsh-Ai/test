@@ -1,12 +1,50 @@
-- name: Notify Discord
-  if: always()
-  uses: Ilshidur/action-discord@master
-  with:
-    webhook: ${{ secrets.DISCORD_WEBHOOK }}
-    message: |
-      🚀 **[배포 결과]**
-      ▫ 워크플로우: ${{ github.workflow }}
-      ▫ 브랜치: ${{ github.ref_name }}
-      ▫ 상태: ${{ job.status }}
-      ▫ 커밋: ${{ github.sha }}
-      ▫ 작성자: ${{ github.actor }}
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu/project
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
+
+      - name: Notify Discord (Success)
+        if: success()
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ✅ **[배포 성공]**
+            ▫ 워크플로우: ${{ github.workflow }}
+            ▫ 브랜치: ${{ github.ref_name }}
+            ▫ 커밋: ${{ github.sha }}
+            ▫ 작성자: ${{ github.actor }}
+
+      - name: Notify Discord (Failure)
+        if: failure()
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ❌ **[배포 실패]**
+            ▫ 워크플로우: ${{ github.workflow }}
+            ▫ 브랜치: ${{ github.ref_name }}
+            ▫ 커밋: ${{ github.sha }}
+            ▫ 작성자: ${{ github.actor }}
