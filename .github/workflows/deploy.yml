@@ -1,26 +1,12 @@
-name: Deploy to EC2 and notify Discord
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # 여기에 테스트, 빌드, 배포 스크립트 삽입
-
-    - name: Notify Discord
-      if: ${{ success() }}
-      uses: Ilshidur/action-discord@master
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK }}
-        message: |
-          🚀 [배포 성공]
-          ▫ 브랜치: `main`
-          ▫ 커밋: ${{ github.sha }}
-          ▫ 담당자: @kr_dev
+- name: Notify Discord
+  if: always()
+  uses: Ilshidur/action-discord@master
+  with:
+    webhook: ${{ secrets.DISCORD_WEBHOOK }}
+    message: |
+      🚀 **[배포 결과]**
+      ▫ 워크플로우: ${{ github.workflow }}
+      ▫ 브랜치: ${{ github.ref_name }}
+      ▫ 상태: ${{ job.status }}
+      ▫ 커밋: ${{ github.sha }}
+      ▫ 작성자: ${{ github.actor }}
