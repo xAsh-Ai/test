@@ -25,9 +25,10 @@ jobs:
       - name: Notify Discord
         if: always()
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
+          args: |
             🚀 **[Oracle VM 배포 완료]**
             ▫ 브랜치: ${{ github.ref_name }}
             ▫ 커밋: ${{ github.sha }}
