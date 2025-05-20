@@ -24,12 +24,11 @@ jobs:
 
       - name: Notify Discord
         if: always()
-        uses: tsickert/discord-webhook@v1.0.0
+        uses: Ilshidur/action-discord@master
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          sender: "Deploy Bot"
-          content: |
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
             🚀 **[Oracle VM 배포 완료]**
-            ▫ 브랜치: `${{ github.ref_name }}`
-            ▫ 커밋: `${{ github.sha }}`
-            ▫ 작성자: `${{ github.actor }}`
+            ▫ 브랜치: ${{ github.ref_name }}
+            ▫ 커밋: ${{ github.sha }}
+            ▫ 작성자: ${{ github.actor }}
