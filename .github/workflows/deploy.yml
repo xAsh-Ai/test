@@ -69,10 +69,10 @@ jobs:
         shell: bash
         run: |
           DATE=$(date "+%Y-%m-%dT%H:%M:%S")
-          curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
+          cat <<EOF | curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
             -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
-            --data @- <<EOF
+            --data @-
 {
   "fields": {
     "Date": "$DATE",
@@ -83,4 +83,4 @@ jobs:
     "Status": "성공"
   }
 }
-EOF
+EOF  
