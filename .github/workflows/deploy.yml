@@ -55,3 +55,13 @@ jobs:
               "username": "Deploy Bot",
               "content": "🚨 **[배포 실패]**\n▫ 브랜치: `${{ github.ref_name }}`\n▫ 커밋: `${{ github.sha }}`\n▫ 작성자: `${{ github.actor }}`"
             }'
+
+      #.env.production 자동 전송
+      - name: Restore .env.production on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            echo "${{ secrets.DISCORD_ENV_B64 }}" | base64 -d > /home/ubuntu/your_project/.env.production
