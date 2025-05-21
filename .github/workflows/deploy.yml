@@ -73,7 +73,7 @@ jobs:
           curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
             -H "Authorization: Bearer ${{ secrets.AIRTABLE_TOKEN }}" \
             -H "Content-Type: application/json" \
-            --data @- <<EOF
+      --data @- <<EOF
       {
         "fields": {
           "Date": "$DATE",
