@@ -70,16 +70,18 @@ jobs:
       # airtable에 저장
       - name: 기록을 Airtable에 저장
         run: |
+          DATE=$(date "+%Y-%m-%d %H:%M:%S")
           curl -X POST https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory \
             -H "Authorization: Bearer ${{ secrets.AIRTABLE_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "fields": {
-                "Date": "'$(date "+%Y-%m-%d %H:%M:%S")'",
-                "Author": "${{ github.actor }}",
-                "Branch": "${{ github.ref_name }}",
-                "Commit": "${{ github.sha }}",
-                "QA": "통과",
-                "Status": "성공"
+            -d "{
+                \"fields\": {
+                \"Date\": \"$DATE\",
+                \"Author\": \"${{ github.actor }}\",
+                \"Branch\": \"${{ github.ref_name }}\",
+                \"Commit\": \"${{ github.sha }}\",
+                \"QA\": \"통과\",
+                \"Status\": \"성공\"
               }
-            }'
+            }"
+
