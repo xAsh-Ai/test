@@ -25,16 +25,26 @@ jobs:
             npm run build
             pm2 restart nextjs || pm2 start npm --name "nextjs" -- run start
 
-      - name: Notify Discord
+      - name: Notify Discord (Country-based)
         if: always()
         run: |
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d '{
-                 "username": "Deploy Bot",
-                 "content": "🚀 **[Oracle VM 배포 완료]**\n▫ 브랜치: main\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: ${{ github.actor }}"
-               }' \
-               ${{ secrets.DISCORD_WEBHOOK }}
+          ACTOR="${{ github.actor }}"
+          MESSAGE="🚀 **[Oracle VM 배포 완료]**\n▫ 브랜치: main\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: $ACTOR"
+
+          if [[ "$ACTOR" == vn-* ]]; then
+            WEBHOOK="${{ secrets.DISCORD_WEBHOOK_VN }}"
+          elif [[ "$ACTOR" == in-* ]]; then
+            WEBHOOK="${{ secrets.DISCORD_WEBHOOK_IN }}"
+          else
+            WEBHOOK="${{ secrets.DISCORD_WEBHOOK }}"
+          fi
+
+          curl -X POST $WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"username\": \"Deploy Bot\",
+              \"content\": \"$MESSAGE\"
+            }"
 
       - name: Notify QA Results
         if: always()
