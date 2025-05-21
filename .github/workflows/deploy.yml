@@ -33,7 +33,6 @@ jobs:
                }' \
                ${{ secrets.DISCORD_WEBHOOK }}
 
-      # 📄 QA 결과 알림
       - name: Notify QA Results
         if: always()
         run: |
@@ -45,7 +44,6 @@ jobs:
               \"content\": \"🔍 **[QA 결과]**\n$QA_RESULT\n▫ 작성자: ${{ github.actor }}\"
             }"
 
-      # ❌ 배포 실패 시 알림
       - name: Notify on Deploy Failure
         if: failure()
         run: |
@@ -56,7 +54,6 @@ jobs:
               "content": "🚨 **[배포 실패]**\n▫ 브랜치: `${{ github.ref_name }}`\n▫ 커밋: `${{ github.sha }}`\n▫ 작성자: `${{ github.actor }}`"
             }'
 
-      #.env.production 자동 전송
       - name: Restore .env.production on server
         uses: appleboy/ssh-action@master
         with:
@@ -76,14 +73,14 @@ jobs:
             -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
             --data @- <<EOF
-      {
-        "fields": {
-          "Date": "$DATE",
-          "Author": "$GITHUB_ACTOR",
-          "Branch": "$GITHUB_REF_NAME",
-          "Commit": "$GITHUB_SHA",
-          "QA": "통과",
-          "Status": "성공"
-        }
-      }
+{
+  "fields": {
+    "Date": "$DATE",
+    "Author": "${{ github.actor }}",
+    "Branch": "${{ github.ref_name }}",
+    "Commit": "${{ github.sha }}",
+    "QA": "통과",
+    "Status": "성공"
+  }
+}
 EOF
