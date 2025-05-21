@@ -1,13 +1,16 @@
 name: Deploy Next.js to Oracle VM
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types: [closed]  # PR이 종료되었을 때만 실행
 
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true  # 머지된 PR만 실행
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy to Oracle VM
         uses: appleboy/ssh-action@master
@@ -29,7 +32,7 @@ jobs:
                -X POST \
                -d '{
                  "username": "Deploy Bot",
-                 "content": "🚀 **[Oracle VM 배포 완료]**\n▫ 브랜치: ${{ github.ref_name }}\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: ${{ github.actor }}"
+                 "content": "🚀 **[Oracle VM 배포 완료]**\n▫ 브랜치: main\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: ${{ github.actor }}"
                }' \
                ${{ secrets.DISCORD_WEBHOOK }}
 
@@ -51,7 +54,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "username": "Deploy Bot",
-              "content": "🚨 **[배포 실패]**\n▫ 브랜치: `${{ github.ref_name }}`\n▫ 커밋: `${{ github.sha }}`\n▫ 작성자: `${{ github.actor }}`"
+              "content": "🚨 **[배포 실패]**\n▫ 브랜치: main\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: ${{ github.actor }}"
             }'
 
       - name: Restore .env.production on server
@@ -67,10 +70,10 @@ jobs:
         env:
           AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
           GIT_AUTHOR: ${{ github.actor }}
-          GIT_BRANCH: ${{ github.ref_name }}
+          GIT_BRANCH: main
           GIT_SHA: ${{ github.sha }}
         run: |
-          DATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")  # ← ISO 8601 UTC
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
           cat <<EOF | curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
             -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
