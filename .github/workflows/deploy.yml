@@ -75,15 +75,14 @@ jobs:
             -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
             --data @-
-
-        {
-          "fields": {
-            "Date": "$DATE",
-            "Author": "$GIT_AUTHOR",
-            "Branch": "$GIT_BRANCH",
-            "Commit": "$GIT_SHA",
-            "QA": "통과",
-            "Status": "성공"
+          {
+            "fields": {
+              "Date": "$DATE",
+              "Author": "$GIT_AUTHOR",
+              "Branch": "$GIT_BRANCH",
+              "Commit": "$GIT_SHA",
+              "QA": "통과",
+              "Status": "성공"
+            }
           }
-        }
-    EOF
+      EOF
