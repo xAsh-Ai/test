@@ -67,19 +67,21 @@ jobs:
             echo "${{ secrets.DISCORD_ENV_B64 }}" | base64 -d > /home/ubuntu/your_project/.env.production
 
       - name: 기록을 Airtable에 저장
+        env:
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
         shell: bash
         run: |
           DATE=$(date "+%Y-%m-%dT%H:%M:%S")
           curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
-            -H "Authorization: Bearer ${{ secrets.AIRTABLE_TOKEN }}" \
+            -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
             --data @- <<EOF
       {
         "fields": {
           "Date": "$DATE",
-          "Author": "${{ github.actor }}",
-          "Branch": "${{ github.ref_name }}",
-          "Commit": "${{ github.sha }}",
+          "Author": "$GITHUB_ACTOR",
+          "Branch": "$GITHUB_REF_NAME",
+          "Commit": "$GITHUB_SHA",
           "QA": "통과",
           "Status": "성공"
         }
