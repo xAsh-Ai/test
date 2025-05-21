@@ -70,7 +70,7 @@ jobs:
           GIT_BRANCH: ${{ github.ref_name }}
           GIT_SHA: ${{ github.sha }}
         run: |
-          DATE=$(date "+%Y-%m-%dT%H:%M:%S")
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")  # ← ISO 8601 UTC
           cat <<EOF | curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
             -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
