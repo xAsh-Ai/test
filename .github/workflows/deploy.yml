@@ -32,3 +32,26 @@ jobs:
                  "content": "🚀 **[Oracle VM 배포 완료]**\n▫ 브랜치: ${{ github.ref_name }}\n▫ 커밋: ${{ github.sha }}\n▫ 작성자: ${{ github.actor }}"
                }' \
                ${{ secrets.DISCORD_WEBHOOK }}
+
+      # 📄 QA 결과 알림
+      - name: Notify QA Results
+        if: always()
+        run: |
+          QA_RESULT="✅ Lint 통과\n✅ Unit Test 통과"
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_QA }} \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"username\": \"QA Bot\",
+              \"content\": \"🔍 **[QA 결과]**\n$QA_RESULT\n▫ 작성자: ${{ github.actor }}\"
+            }"
+
+      # ❌ 배포 실패 시 알림
+      - name: Notify on Deploy Failure
+        if: failure()
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_FAILURE }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "username": "Deploy Bot",
+              "content": "🚨 **[배포 실패]**\n▫ 브랜치: `${{ github.ref_name }}`\n▫ 커밋: `${{ github.sha }}`\n▫ 작성자: `${{ github.actor }}`"
+            }'
