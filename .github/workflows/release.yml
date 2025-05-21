@@ -17,3 +17,24 @@ jobs:
               "username": "Release Bot",
               "content": "📦 **새 릴리즈: `${{ github.event.release.tag_name }}`**\n🔗 ${{ github.event.release.html_url }}"
             }'
+      - name: Record Release in Airtable
+        env:
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+        run: |
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+          VERSION=${{ github.event.release.tag_name }}
+          curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
+            -H "Authorization: Bearer $AIRTABLE_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"fields\": {
+                \"Date\": \"$DATE\",
+                \"Author\": \"${{ github.actor }}\",
+                \"Branch\": \"main\",
+                \"Commit\": \"${{ github.sha }}\",
+                \"QA\": \"통과\",
+                \"Status\": \"릴리즈\",
+                \"Version\": \"$VERSION\"
+              }
+            }"
+
