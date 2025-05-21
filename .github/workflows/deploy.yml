@@ -66,20 +66,24 @@ jobs:
       - name: 기록을 Airtable에 저장
         env:
           AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-        shell: bash
+          GIT_AUTHOR: ${{ github.actor }}
+          GIT_BRANCH: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
         run: |
           DATE=$(date "+%Y-%m-%dT%H:%M:%S")
           cat <<EOF | curl -X POST "https://api.airtable.com/v0/app3A3wNTuBjyz8LM/DeployHistory" \
             -H "Authorization: Bearer $AIRTABLE_TOKEN" \
             -H "Content-Type: application/json" \
             --data @-
-          {
-          "fields": {
-            "Date": "$DATE",
-            "Author": "$github.actor",
-            "Branch": "$github.ref_name",
-            "Commit": "$github.sha",
-            "QA": "통과",
-            "Status": "성공"
-            }
-          }
+
+{
+      "fields": {
+        "Date": "$DATE",
+        "Author": "$GIT_AUTHOR",
+        "Branch": "$GIT_BRANCH",
+        "Commit": "$GIT_SHA",
+        "QA": "통과",
+        "Status": "성공"
+      }
+    }
+EOF
