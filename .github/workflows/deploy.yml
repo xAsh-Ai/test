@@ -66,8 +66,6 @@ jobs:
           script: |
             echo "${{ secrets.DISCORD_ENV_B64 }}" | base64 -d > /home/ubuntu/your_project/.env.production
 
-
-      # airtable에 저장
       - name: 기록을 Airtable에 저장
         shell: bash
         run: |
@@ -77,7 +75,7 @@ jobs:
             -H "Content-Type: application/json" \
             --data @- <<EOF
       {
-          "fields": {
+        "fields": {
           "Date": "$DATE",
           "Author": "${{ github.actor }}",
           "Branch": "${{ github.ref_name }}",
@@ -87,3 +85,4 @@ jobs:
         }
       }
       EOF
+
