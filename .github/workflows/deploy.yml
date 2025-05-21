@@ -76,9 +76,9 @@ jobs:
           {
           "fields": {
             "Date": "$DATE",
-            "Author": "${{ github.actor }}",
-            "Branch": "${{ github.ref_name }}",
-            "Commit": "${{ github.sha }}",
+            "Author": "$github.actor",
+            "Branch": "$github.ref_name",
+            "Commit": "$github.sha",
             "QA": "통과",
             "Status": "성공"
             }
